@@ -1,0 +1,75 @@
+iot-realtime-analytics/
+├── .github/              # CI/CD workflows (e.g., GitHub Actions)
+│   └── workflows/
+│       ├── lint_test.yml
+│       └── deploy.yml
+├── .gitignore            # Specifies intentionally untracked files that Git should ignore
+├── README.md             # High-level project overview, setup, usage instructions
+├── LICENSE               # Project license file
+├── requirements.txt      # Core Python dependencies (or use pyproject.toml/poetry/pipenv)
+├── config/               # Application configuration files
+│   ├── settings.yaml     # Central configuration (Kafka brokers, topics, Pinot details, etc.)
+│   ├── log_config.yaml   # Logging configuration
+│   └── .env.example      # Example environment variables (secrets should not be committed)
+├── data_generator/       # Scripts and modules for generating source IoT data
+│   ├── __init__.py
+│   ├── schemas/          # Data schemas/models for generated events (e.g., Pydantic models, JSON schemas)
+│   │   └── iot_event.py
+│   ├── generator.py      # Main script to generate data (can output to stdout, file, or directly to producer)
+│   └── config.py         # Generator-specific configurations (e.g., device types, data ranges, rate)
+├── kafka_producer/       # Python script(s) to publish generated data to Kafka
+│   ├── __init__.py
+│   ├── producer.py       # Script that reads generated data and sends to Kafka topic(s)
+│   └── utils.py          # Utility functions (e.g., serialization, Kafka connection handling)
+├── flink_jobs/           # PyFlink job definitions
+│   ├── __init__.py
+│   ├── schemas/          # Data schemas used within Flink (potentially shared with generator/producer via common lib)
+│   │   └── processed_event.py
+│   ├── iot_processing_job.py # The main PyFlink streaming job logic
+│   ├── udfs/             # User-Defined Functions for Flink if needed
+│   │   └── enrichment.py
+│   └── connectors/       # Configuration or helpers related to Flink connectors (Kafka source, Pinot sink)
+│       └── pinot_sink_config.py # Example: Helper to configure Pinot sink if complex
+├── pinot_config/         # Apache Pinot schema and table configuration files
+│   ├── schemas/          # Pinot schema definitions (JSON)
+│   │   └── iot_events_schema.json
+│   └── tables/           # Pinot table configurations (realtime/offline) (JSON)
+│       └── iot_events_realtime_table.json
+├── infra/                # Infrastructure as Code (IaC) and local setup
+│   └── docker-compose/   # For local development environment
+│       ├── docker-compose.yml # Defines Kafka, Zookeeper, Flink, Pinot services
+│       ├── kafka/            # Kafka specific configs, scripts
+│       ├── flink/            # Flink specific configs, scripts
+│       └── pinot/            # Pinot specific configs, scripts
+│   └── terraform/        # (Optional) Terraform/Pulumi/CloudFormation for cloud deployments
+│       ├── main.tf
+│       └── variables.tf
+├── notebooks/            # Jupyter notebooks for exploration, testing queries, development
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_pinot_query_tests.ipynb
+│   └── 03_flink_logic_dev.ipynb
+├── scripts/              # Helper scripts for building, deploying, managing stack
+│   ├── start_local_env.sh # Starts the docker-compose stack
+│   ├── stop_local_env.sh  # Stops the docker-compose stack
+│   ├── submit_flink_job.sh # Submits the PyFlink job to the cluster
+│   ├── create_pinot_resources.sh # Creates Pinot schema and table via controller API
+│   └── run_producer.sh    # Starts the Kafka producer script
+├── src/                  # (Optional) Shared library code if components become complex
+│   └── iot_analytics_lib/
+│       ├── __init__.py
+│       └── models/       # Common data models/schemas shared across components
+│       └── utils/        # Common utility functions
+├── tests/                # Unit, integration, and end-to-end tests
+│   ├── unit/             # Unit tests for individual modules/functions
+│   │   ├── test_data_generator.py
+│   │   ├── test_kafka_producer.py
+│   │   └── test_flink_udfs.py
+│   ├── integration/      # Integration tests between components (e.g., producer -> Kafka -> Flink)
+│   │   └── test_flink_kafka_pipeline.py
+│   └── conftest.py       # Pytest configuration and fixtures
+└── docs/                 # Project documentation
+    ├── architecture.md   # System architecture diagram and explanation
+    ├── setup_guide.md    # Detailed setup instructions
+    ├── data_model.md     # Explanation of data schemas and transformations
+    └── adr/              # Architecture Decision Records (optional)
+        └── 001_chose_pinot_for_latency.md
