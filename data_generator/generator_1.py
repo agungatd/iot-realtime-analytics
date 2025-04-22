@@ -90,7 +90,7 @@ def main():
 
             try:
                 # Send the message to Kafka
-                future = producer.send(KAFKA_TOPIC, value=event_data, key=event_data['countryID'].encode('utf-8')) # Optional: key by type
+                future = producer.send(KAFKA_TOPIC, value=event_data, key=event_data['countryID'].encode('utf-8'))  # Optional: key by type
 
                 # Block for 'synchronous' sends, helps catch errors immediately (optional)
                 # record_metadata = future.get(timeout=10)
