@@ -9,6 +9,12 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     # restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD", "/bin/zookeeper-shell", "status"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 10s
     networks:
       - streaming-network
 
@@ -28,23 +34,29 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     depends_on:
       - zookeeper
+    healthcheck:
+      test: [ "CMD-SHELL", "/bin/kafka-broker-api-versions -bootstrap-server kafka:9092" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
       - streaming-network
 
-  # Kafka UI for monitoring
-  kafka-ui:
-    image: provectuslabs/kafka-ui:v0.7.2
-    container_name: kafka-ui
-    ports:
-      - "8088:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-    depends_on:
-      - kafka
-    networks:
-      - streaming-network
+  # # Kafka UI for monitoring
+  # kafka-ui:
+  #   image: provectuslabs/kafka-ui:v0.7.2
+  #   container_name: kafka-ui
+  #   ports:
+  #     - "8088:8080"
+  #   environment:
+  #     KAFKA_CLUSTERS_0_NAME: local
+  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+  #     KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+  #   depends_on:
+  #     - kafka
+  #   networks:
+  #     - streaming-network
 
   # Flink JobManager
   jobmanager:
@@ -72,93 +84,75 @@ services:
       - streaming-network
 
   # Pinot Controller
-  # pinot-controller:
-  #   image: apachepinot/pinot:1.2.0
-  #   command: "StartController -zkAddress zookeeper:2181"
-  #   container_name: "pinot-controller"
-  #   ports:
-  #     - "9000:9000"
-  #   environment:
-  #     JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-controller.log"
-  #   depends_on:
-  #     - zookeeper
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl -f http://localhost:9000/health || exit 1"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 10s
-  #   restart: unless-stopped
-  #   networks:
-  #     - streaming-network
+  pinot-controller:
+    image: apachepinot/pinot:1.2.0
+    command: "StartController -zkAddress zookeeper:2181"
+    container_name: "pinot-controller"
+    ports:
+      - "9000:9000"
+    environment:
+      JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-controller.log"
+    depends_on:
+      - zookeeper
+    volumes:
+      - ../../pinot_config:/tmp/pinot_config
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - streaming-network
 
-  # # Pinot Broker
-  # pinot-broker:
-  #   image: apachepinot/pinot:1.2.0
-  #   command: "StartBroker -zkAddress zookeeper:2181"
-  #   container_name: "pinot-broker"
-  #   ports:
-  #     - "8099:8099"
-  #   depends_on:
-  #     - zookeeper
-  #     - pinot-controller
-  #   environment:
-  #     JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-broker.log"
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl -f http://localhost:8099/health || exit 1"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 10s
-  #   restart: unless-stopped
-  #   networks:
-  #     - streaming-network
+  # Pinot Broker
+  pinot-broker:
+    image: apachepinot/pinot:1.2.0
+    command: "StartBroker -zkAddress zookeeper:2181"
+    container_name: "pinot-broker"
+    ports:
+      - "8099:8099"
+    depends_on:
+      - zookeeper
+      - pinot-controller
+    environment:
+      JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-broker.log"
+    volumes:
+      - ../../pinot_config:/tmp/pinot_config
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8099/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - streaming-network
 
-  # # Pinot Server
-  # pinot-server:
-  #   image: apachepinot/pinot:1.2.0
-  #   command: "StartServer -zkAddress zookeeper:2181"
-  #   container_name: "pinot-server"
-  #   restart: unless-stopped
-  #   environment:
-  #     JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx16G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-server.log"
-  #   ports:
-  #     - "8098:8098"
-  #   depends_on:
-  #     - zookeeper
-  #     - pinot-controller
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl -f http://localhost:8097/health/readiness || exit 1"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 10s
-  #   networks:
-  #     - streaming-network
-
-  # # Data generator service
-  # data-generator:
-  #   build:
-  #     context: ./data_generator
-  #   container_name: data_generator
-  #   depends_on:
-  #     - kafka
-  #   networks:
-  #     - streaming-network
-
-  # # Flink job launcher
-  # flink-job-launcher:
-  #   build:
-  #     context: ./flink-job
-  #   container_name: flink-job-launcher
-  #   environment:
-  #     - FLINK_JOBMANAGER_HOST=flink-jobmanager
-  #     - FLINK_JOBMANAGER_PORT=8081
-  #   depends_on:
-  #     - flink-jobmanager
-  #     - kafka
-  #   networks:
-  #     - streaming-network
+  # Pinot Server
+  pinot-server:
+    image: apachepinot/pinot:1.2.0
+    command: "StartServer -zkAddress zookeeper:2181"
+    container_name: "pinot-server"
+    restart: unless-stopped
+    environment:
+      JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx16G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-server.log"
+    ports:
+      - "8098:8098"
+    volumes:
+      - ../../pinot_config:/tmp/pinot_config
+    depends_on:
+      - zookeeper
+      - pinot-controller
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8097/health/readiness || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - streaming-network
 
 networks:
   streaming-network:

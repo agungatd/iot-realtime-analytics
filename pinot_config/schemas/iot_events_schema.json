@@ -1,0 +1,29 @@
+{
+    "schemaName": "iot-events",
+    "dimensionFieldSpecs": [
+      {
+        "name": "deviceID",
+        "dataType": "STRING"
+      },
+      {
+        "name": "countryID",
+        "dataType": "STRING"
+      },
+      {
+        "name": "potentiallyDirtyField",
+        "dataType": "STRING"
+      }
+    ],
+    "metricFieldSpecs": [
+      {
+        "name": "value",
+        "dataType": "FLOAT"
+      }
+    ],
+    "dateTimeFieldSpecs": [{
+      "name": "timestamp",
+      "dataType": "LONG",
+      "format" : "1:MILLISECONDS:EPOCH",
+      "granularity": "1:MILLISECONDS"
+    }]
+  }

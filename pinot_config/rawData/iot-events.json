@@ -1,0 +1,15 @@
+{"deviceID": "device_69", "countryID": "DE", "timestamp": 1745395969388, "value": 65.27, "potentiallyDirtyField": null}
+{"deviceID": "device_91", "countryID": "ID", "timestamp": 1745395969843, "value": 17.21}
+{"deviceID": "device_69", "countryID": "GB", "timestamp": 1745395970177, "value": 61.09, "potentiallyDirtyField": "clean"}
+{"deviceID": "device_71", "countryID": "JP", "timestamp": 1745395970512, "value": -6.86, "potentiallyDirtyField": " extra spaces   everywhere "}
+{"deviceID": "device_93", "countryID": "DE", "timestamp": 1745395970847, "value": 67.27, "potentiallyDirtyField": null}
+{"deviceID": "device_10", "countryID": "US", "timestamp": 1745395971183, "value": 87.16, "potentiallyDirtyField": null}
+{"deviceID": "device_83", "countryID": "MX", "timestamp": 1745395971518, "value": -5.11, "potentiallyDirtyField": "  needs trim "}
+{"deviceID": "device_58", "countryID": "IN", "timestamp": 1745395971854, "value": 87.1, "potentiallyDirtyField": "  mixed Case needs TRIM  "}
+{"deviceID": "device_22", "countryID": "DE", "timestamp": 1745395972188, "value": -1.14, "potentiallyDirtyField": "clean"}
+{"deviceID": "device_78", "countryID": "DE", "timestamp": 1745395972522, "value": 54.82, "potentiallyDirtyField": "  needs trim "}
+{"deviceID": "device_18", "countryID": "ID", "timestamp": 1745395972857, "value": 90.4, "potentiallyDirtyField": null}
+{"deviceID": "device_24", "countryID": "US", "timestamp": 1745395973193, "value": 12.68, "potentiallyDirtyField": " extra spaces   everywhere "}
+{"deviceID": "device_56", "countryID": "MX", "timestamp": 1745395973528, "value": 58.06, "potentiallyDirtyField": "clean"}
+{"deviceID": "device_17", "countryID": "GB", "timestamp": 1745395973863, "value": 12.69, "potentiallyDirtyField": "  mixed Case needs TRIM  "}
+{"deviceID": "device_5", "countryID": "ID", "timestamp": 1745395974197, "value": 60.91, "potentiallyDirtyField": " extra spaces   everywhere "}
