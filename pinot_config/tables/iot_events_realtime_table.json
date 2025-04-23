@@ -1,10 +1,10 @@
 {
-    "tableName": "iot-events",
+    "tableName": "transformed-iot-events",
     "tableType": "REALTIME",
     "segmentsConfig": {
       "timeColumnName": "timestamp",
       "timeType": "MILLISECONDS",
-      "schemaName": "iot-events",
+      "schemaName": "transformed-iot-events",
       "replicasPerPartition": "1"
     },
     "tenants": {},
@@ -13,7 +13,7 @@
       "streamConfigs": {
         "streamType": "kafka",
         "stream.kafka.consumer.type": "lowlevel",
-        "stream.kafka.topic.name": "iot-events",
+        "stream.kafka.topic.name": "transformed-iot-events",
         "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
         "stream.kafka.consumer.factory.class.name": "org.apache.pinot.plugin.stream.kafka20.KafkaConsumerFactory",
         "stream.kafka.broker.list": "kafka:29092",

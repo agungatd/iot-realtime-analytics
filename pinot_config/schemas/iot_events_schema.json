@@ -1,5 +1,5 @@
 {
-    "schemaName": "iot-events",
+    "schemaName": "transformed-iot-events",
     "dimensionFieldSpecs": [
       {
         "name": "deviceID",
